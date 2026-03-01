@@ -1,54 +1,56 @@
 from flask import Flask, request, jsonify
 from datetime import datetime
+import random
 
 app = Flask(__name__)
 
-# Exemple de fonction astrologique simplifiée
-def calcul_compatibilite(user_data):
-    # Ici tu mets ton vrai calcul astrologique avec flatlib ou autre
-    # Pour l'exemple, on renvoie un score aléatoire
-    import random
-    return random.randint(50, 100)  # Pourcentage de compatibilité
+# Fonction astrologique simplifiée
+def calcul_astrologie(birth_datetime, birth_city):
+    # Exemple simplifié : tu remplaceras par ton vrai calcul
+    soleil = "Lion"
+    lune = "Cancer"
+    ascendant = "Balance"
+    latitude = 48.8566  # Exemple : Paris
+    longitude = 2.3522
+    compatibilite = random.randint(50, 100)
+    return soleil, lune, ascendant, latitude, longitude, compatibilite
 
 @app.route('/signup', methods=['POST'])
 def signup():
     try:
         data = request.json
-
-        # Récupération des champs envoyés par Adalo
         prenom = data.get('prenom')
         email = data.get('email')
         password = data.get('password')
         birthCity = data.get('birthCity')
 
-        # Date + heure de naissance
-        birth_datetime_str = data.get('birthDateTime')  # Ex : 1995-08-14T14:30:00.000Z
+        birth_datetime_str = data.get('birthDateTime')
         dt = datetime.fromisoformat(birth_datetime_str.replace("Z", ""))
         date_of_birth = dt.date()
         time_of_birth = dt.time()
 
-        # Préparer les données utilisateur
+        # Calcul astrologique
+        soleil, lune, ascendant, latitude, longitude, compatibilite = calcul_astrologie(dt, birthCity)
+
         user_data = {
             "prenom": prenom,
             "email": email,
             "password": password,
             "birthCity": birthCity,
             "dateOfBirth": str(date_of_birth),
-            "timeOfBirth": str(time_of_birth)
+            "timeOfBirth": str(time_of_birth),
+            "soleil": soleil,
+            "lune": lune,
+            "ascendant": ascendant,
+            "latitude": latitude,
+            "longitude": longitude,
+            "compatibilite": compatibilite
         }
-
-        # Calcul de compatibilité (exemple)
-        compatibilite = calcul_compatibilite(user_data)
-        user_data['compatibilite'] = compatibilite
-
-        # Ici tu peux enregistrer user_data dans ta base si besoin
-        # Exemple : MongoDB, PostgreSQL, Firebase, etc.
 
         return jsonify({"success": True, "user": user_data})
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
-# Point d'entrée pour Render
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)z
+    app.run(host="0.0.0.0", port=10000)
