@@ -1,62 +1,54 @@
 from flask import Flask, request, jsonify
-from flatlib.chart import Chart
-from flatlib import const
-from flatlib.datetime import Datetime
-from flatlib.geopos import GeoPos
-import random
+from datetime import datetime
 
 app = Flask(__name__)
 
-def creer_theme(date, heure, latitude, longitude):
-    dt = Datetime(date, heure, '+00:00')
-    pos = GeoPos(latitude, longitude)
-    chart = Chart(dt, pos)
+# Exemple de fonction astrologique simplifiée
+def calcul_compatibilite(user_data):
+    # Ici tu mets ton vrai calcul astrologique avec flatlib ou autre
+    # Pour l'exemple, on renvoie un score aléatoire
+    import random
+    return random.randint(50, 100)  # Pourcentage de compatibilité
 
-    theme = {
-        'soleil': chart.get(const.SUN).sign,
-        'lune': chart.get(const.MOON).sign,
-        'ascendant': chart.get(const.ASC).sign,
-    }
-    return theme
+@app.route('/signup', methods=['POST'])
+def signup():
+    try:
+        data = request.json
 
-def compatibilite(theme1, theme2):
-    score = 0
-    total = 30
+        # Récupération des champs envoyés par Adalo
+        prenom = data.get('prenom')
+        email = data.get('email')
+        password = data.get('password')
+        birthCity = data.get('birthCity')
 
-    if theme1['soleil'] == theme2['soleil']:
-        score += 10
-    if theme1['lune'] == theme2['lune']:
-        score += 10
-    if theme1['ascendant'] == theme2['ascendant']:
-        score += 10
+        # Date + heure de naissance
+        birth_datetime_str = data.get('birthDateTime')  # Ex : 1995-08-14T14:30:00.000Z
+        dt = datetime.fromisoformat(birth_datetime_str.replace("Z", ""))
+        date_of_birth = dt.date()
+        time_of_birth = dt.time()
 
-    return round((score / total) * 100, 1)
+        # Préparer les données utilisateur
+        user_data = {
+            "prenom": prenom,
+            "email": email,
+            "password": password,
+            "birthCity": birthCity,
+            "dateOfBirth": str(date_of_birth),
+            "timeOfBirth": str(time_of_birth)
+        }
 
-@app.route('/compatibilite', methods=['POST'])
-def calcul_compatibilite():
-    data = request.json
+        # Calcul de compatibilité (exemple)
+        compatibilite = calcul_compatibilite(user_data)
+        user_data['compatibilite'] = compatibilite
 
-    theme1 = creer_theme(
-        data['date1'],
-        data['heure1'],
-        data['lat1'],
-        data['lon1']
-    )
+        # Ici tu peux enregistrer user_data dans ta base si besoin
+        # Exemple : MongoDB, PostgreSQL, Firebase, etc.
 
-    theme2 = creer_theme(
-        data['date2'],
-        data['heure2'],
-        data['lat2'],
-        data['lon2']
-    )
+        return jsonify({"success": True, "user": user_data})
 
-    score = compatibilite(theme1, theme2)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
 
-    return jsonify({
-        "compatibilite": score,
-        "theme1": theme1,
-        "theme2": theme2
-    })
-
-if __name__ == '__main__':
-    app.run()
+# Point d'entrée pour Render
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)z
