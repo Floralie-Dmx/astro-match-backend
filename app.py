@@ -3,7 +3,6 @@ from datetime import datetime
 from flatlib.chart import Chart
 from flatlib.datetime import Datetime
 from flatlib.geopos import GeoPos
-import pyswisseph as swe
 import random
 
 app = Flask(__name__)
