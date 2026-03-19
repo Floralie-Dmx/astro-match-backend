@@ -1,25 +1,29 @@
-# Cosmos ❤️ API
+# Cosmos ❤️ API RGPD Ready
 
-API backend pour l'application Cosmos (rencontre astrologique).
+Backend de l'application Cosmos avec respect RGPD.
 
-## Endpoint
+## Endpoints
 
-POST /inscription
-
-## Données attendues
-
+### POST /inscription
+Données requises:
 - prenom
 - email
 - mot_de_passe
 - date_heure_naissance
 - ville_naissance
+- consentement (true)
+
+### POST /mes_donnees
+Consulter ses données:
+- email
+- mot_de_passe
+
+### POST /supprimer_compte
+Supprimer son compte:
+- email
+- mot_de_passe
 
 ## Réponse
-
-Retourne :
-- soleil
-- lune
-- ascendant
-- latitude
-- longitude
-- compatibilite
+- success: True/False
+- message: description
+- data: informations utilisateur (si applicable)
