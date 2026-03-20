@@ -13,6 +13,9 @@ def home():
 def inscription():
     data = request.get_json()
 
+    if not data:
+        return jsonify({"error": "JSON manquant"}), 400
+
     required_fields = [
         "prenom",
         "email",
@@ -36,35 +39,7 @@ def inscription():
     if email in users_db:
         return jsonify({"error": "Utilisateur déjà existant"}), 400
 
-    # Sauvegarde
     users_db[email] = {
         "prenom": data["prenom"],
         "mot_de_passe": data["mot_de_passe"],
-        "date_heure_naissance": data["date_heure_naissance"],
-        "ville_naissance": data["ville_naissance"],
-        "latitude": data["latitude"],
-        "longitude": data["longitude"]
-    }
-
-    # Simulation astro (on améliorera après)
-    soleil = "Balance"
-    lune = "Cancer"
-    ascendant = "Lion"
-    compatibilite = 80
-
-    return jsonify({
-        "success": True,
-        "data": {
-            "prenom": data["prenom"],
-            "email": email,
-            "soleil": soleil,
-            "lune": lune,
-            "ascendant": ascendant,
-            "compatibilite": compatibilite
-        }
-    })
-
-
-# CONNEXION
-@app.route("/mes_donnees", methods=["POST"])
-def mes_donnees
+        "date_heure_naissance": data["date_heure_na
