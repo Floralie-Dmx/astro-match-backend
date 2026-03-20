@@ -42,4 +42,70 @@ def inscription():
     users_db[email] = {
         "prenom": data["prenom"],
         "mot_de_passe": data["mot_de_passe"],
-        "date_heure_naissance": data["date_heure_na
+        "date_heure_naissance": data["date_heure_naissance"],
+        "ville_naissance": data["ville_naissance"],
+        "latitude": data["latitude"],
+        "longitude": data["longitude"]
+    }
+
+    return jsonify({
+        "success": True,
+        "data": {
+            "prenom": data["prenom"],
+            "email": email,
+            "soleil": "Balance",
+            "lune": "Cancer",
+            "ascendant": "Lion",
+            "compatibilite": 80
+        }
+    })
+
+
+# CONNEXION
+@app.route("/mes_donnees", methods=["POST"])
+def mes_donnees():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "JSON manquant"}), 400
+
+    email = data.get("email")
+    password = data.get("mot_de_passe")
+
+    user = users_db.get(email)
+
+    if not user or user["mot_de_passe"] != password:
+        return jsonify({"error": "Identifiants incorrects"}), 403
+
+    return jsonify({
+        "success": True,
+        "data": user
+    })
+
+
+# SUPPRESSION
+@app.route("/supprimer_compte", methods=["POST"])
+def supprimer_compte():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "JSON manquant"}), 400
+
+    email = data.get("email")
+    password = data.get("mot_de_passe")
+
+    user = users_db.get(email)
+
+    if not user or user["mot_de_passe"] != password:
+        return jsonify({"error": "Accès refusé"}), 403
+
+    del users_db[email]
+
+    return jsonify({
+        "success": True,
+        "message": "Compte supprimé"
+    })
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
