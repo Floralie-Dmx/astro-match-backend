@@ -6,7 +6,7 @@ users_db = {}
 
 @app.route("/")
 def home():
-    return "Cosmos API en ligne 🚀"
+    return "CosmoHeart API en ligne 🚀"
 
 # INSCRIPTION
 @app.route("/inscription", methods=["POST"])
