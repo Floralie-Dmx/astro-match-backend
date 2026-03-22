@@ -61,7 +61,7 @@ def inscription():
     })
 
 
-# CONNEXION
+# CONNEXION (SÉCURISÉE)
 @app.route("/mes_donnees", methods=["POST"])
 def mes_donnees():
     data = request.get_json()
@@ -77,9 +77,18 @@ def mes_donnees():
     if not user or user["mot_de_passe"] != password:
         return jsonify({"error": "Identifiants incorrects"}), 403
 
+    # 🔐 VERSION SÉCURISÉE (sans mot de passe)
+    user_safe = {
+        "prenom": user["prenom"],
+        "date_heure_naissance": user["date_heure_naissance"],
+        "ville_naissance": user["ville_naissance"],
+        "latitude": user["latitude"],
+        "longitude": user["longitude"]
+    }
+
     return jsonify({
         "success": True,
-        "data": user
+        "data": user_safe
     })
 
 
